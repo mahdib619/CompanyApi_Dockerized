@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Reflection;
 using CompanyApi.Data;
 using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
@@ -17,5 +19,6 @@ public static class RegisterServices
 		services.AddFastEndpoints();
 		services.AddSwaggerDoc();
 		services.AddAuthentication();
+		services.AddAutoMapper(Assembly.GetCallingAssembly());
 	}
 }

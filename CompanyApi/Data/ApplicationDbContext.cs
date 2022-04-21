@@ -9,6 +9,8 @@ public class ApplicationDbContext : DbContext
 	{
 		
 	}
+	
+	public DbSet<Company> Companies { get; set; }
 		
 	protected override void OnModelCreating(ModelBuilder builder)
 	{

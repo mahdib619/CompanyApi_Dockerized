@@ -7,9 +7,9 @@ namespace CompanyApi.Services;
 public class CompanyService : ICompanyService
 {
 	private readonly ApplicationDbContext context;
-	private readonly Mapper mapper;
+	private readonly IMapper mapper;
 	
-	public CompanyService(ApplicationDbContext context, Mapper mapper)
+	public CompanyService(ApplicationDbContext context, IMapper mapper)
 	{
 		this.context = context;
 		this.mapper = mapper;

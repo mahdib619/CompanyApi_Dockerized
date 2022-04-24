@@ -1,9 +1,10 @@
-﻿using CompanyApi.Models.Contracts;
+﻿using CompanyApi.Mappers.EndpointMappers;
+using CompanyApi.Models.Contracts;
 using CompanyApi.Services;
 
 namespace CompanyApi.Endpoints.Company;
 
-public class AddCompanyEndpoint : Endpoint<AddUpdateCompanyRequest>
+public class AddCompanyEndpoint : Endpoint<AddUpdateCompanyRequest, EmptyResponse, CompanyEndpointMapper>
 {
 	private readonly ICompanyService companyService;
 
@@ -20,7 +21,7 @@ public class AddCompanyEndpoint : Endpoint<AddUpdateCompanyRequest>
 
 	public override async Task HandleAsync(AddUpdateCompanyRequest req, CancellationToken ct)
 	{
-		await companyService.Add(req);
+		await companyService.Add(Map.ToEntity(req));
 		await SendAsync(new EmptyResponse(), StatusCodes.Status201Created, cancellation: ct);
 	}
 }

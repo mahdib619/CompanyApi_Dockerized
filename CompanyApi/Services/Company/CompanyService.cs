@@ -1,58 +1,54 @@
-using AutoMapper;
-using CompanyApi.Models.Contracts;
+using System.Data;
+using Dapper;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace CompanyApi.Services;
 
 public class CompanyService : ICompanyService
 {
-	private readonly ApplicationDbContext context;
-	private readonly IMapper mapper;
-	
-	public CompanyService(ApplicationDbContext context, IMapper mapper)
+	private readonly IDbConnection db;
+
+	public CompanyService(IConfiguration configuration)
 	{
-		this.context = context;
-		this.mapper = mapper;
+		db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
 	}
-	
-	public async Task Add(AddUpdateCompanyRequest request)
+
+	public async Task<Company> Add(Company company)
 	{
-		var company = mapper.Map<Company>(request);
-		await context.Companies.AddAsync(company);
-		await context.SaveChangesAsync();
+		var query = @"INSERT INTO Companies (Name, Address, City, State, PostalCode) VALUES (@Name, @Address, @City, @State, @PostalCode);
+						SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+		var id = await db.QueryFirstAsync<int>(query, company);
+		company.Id = id;
+
+		return company;
 	}
 
 	public async Task<ICollection<Company>> GetAll()
 	{
-		return await context.Companies.AsNoTracking().ToListAsync();
+		return (await db.QueryAsync<Company>("SELECT * FROM Companies")).ToList();
 	}
 
 	public async Task<Company> GetCompany(int id)
 	{
-		return await context.Companies.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+		return await db.QueryFirstOrDefaultAsync<Company>("SELECT * FROM Companies WHERE Id = @Id", new { id });
 	}
 
 	public async Task<bool> Remove(int id)
 	{
-		var company = await context.Companies.FindAsync(id);
-		
-		if(company is null)
-			return false;
+		var query = "DELETE Companies where Id = @Id";
 
-		context.Companies.Remove(company);
-		await context.SaveChangesAsync();
-		return true;
+		var result = await db.ExecuteAsync(query, new { id });
+		return result > 0;
 	}
 
-	public async Task<bool> Update(int companyId, AddUpdateCompanyRequest companyRequest)
+	public async Task<bool> Update(Company company)
 	{
-		var company = await context.Companies.FindAsync(companyId);
+		var query = @"UPDATE Companies SET Name = @Name, Address = @Address, City = @City, State = @State, PostalCode = @PostalCode
+						WHERE Id = @Id";
 
-		if (company is null)
-			return false;
-
-		mapper.Map(companyRequest, company);
-		await context.SaveChangesAsync();
-		return true;
+		var result = await db.ExecuteAsync(query, company);
+		return result > 0;
 	}
 }

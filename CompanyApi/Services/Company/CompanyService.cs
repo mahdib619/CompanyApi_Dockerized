@@ -51,4 +51,12 @@ public class CompanyService : ICompanyService
 		var result = await db.ExecuteAsync(query, company);
 		return result > 0;
 	}
+
+	public async Task<bool> Contains(int id)
+	{
+		var query = "SELECT 1 FROM Companies where Id = @Id";
+
+		var result = await db.ExecuteScalarAsync<int>(query, new { id });
+		return result > 0;
+	}
 }

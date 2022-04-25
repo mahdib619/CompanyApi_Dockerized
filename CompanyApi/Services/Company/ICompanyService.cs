@@ -7,4 +7,5 @@ public interface ICompanyService
 	Task<Company> Add(Company company);
 	Task<bool> Remove(int id);
 	Task<bool> Update(Company company);
+	Task<bool> Contains(int id);
 }

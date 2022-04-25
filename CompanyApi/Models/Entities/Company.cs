@@ -8,4 +8,6 @@ public class Company
 	public string City { get; set; }
 	public string State { get; set; }
 	public string PostalCode { get; set; }
+
+	public ICollection<Employee> Employees { get; set; }
 }

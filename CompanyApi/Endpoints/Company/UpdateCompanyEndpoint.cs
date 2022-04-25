@@ -14,7 +14,7 @@ public class UpdateCompanyEndpoint : Endpoint<AddUpdateCompanyRequest, EmptyResp
 	}
 	public override void Configure()
 	{
-		Post();
+		Put();
 		Routes("/companies/{id:int}");
 		AllowAnonymous();
 	}

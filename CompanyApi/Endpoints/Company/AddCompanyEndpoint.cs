@@ -4,7 +4,7 @@ using CompanyApi.Services;
 
 namespace CompanyApi.Endpoints.Company;
 
-public class AddCompanyEndpoint : Endpoint<AddUpdateCompanyRequest, EmptyResponse, CompanyEndpointMapper>
+public class AddCompanyEndpoint : Endpoint<AddUpdateCompanyRequest, GetCompanyResponse, CompanyEndpointMapper>
 {
 	private readonly ICompanyService companyService;
 
@@ -21,7 +21,7 @@ public class AddCompanyEndpoint : Endpoint<AddUpdateCompanyRequest, EmptyRespons
 
 	public override async Task HandleAsync(AddUpdateCompanyRequest req, CancellationToken ct)
 	{
-		await companyService.Add(Map.ToEntity(req));
-		await SendAsync(new EmptyResponse(), StatusCodes.Status201Created, cancellation: ct);
+		var newCompany = Map.FromEntity(await companyService.Add(Map.ToEntity(req)));
+		await SendCreatedAtAsync<GetCompanyEndpoint>(new { newCompany.Id }, newCompany, generateAbsoluteUrl: true, cancellation: ct);
 	}
 }

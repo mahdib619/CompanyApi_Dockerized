@@ -4,7 +4,7 @@ using CompanyApi.Services;
 
 namespace CompanyApi.Endpoints.Employee;
 
-public class AddEmployeeEndpoint : Endpoint<AddEmployeeRequest, EmptyResponse, EmployeeEndpointMapper<AddEmployeeRequest>>
+public class AddEmployeeEndpoint : Endpoint<AddEmployeeRequest, GetEmployeeResponse, EmployeeEndpointMapper<AddEmployeeRequest>>
 {
 	private readonly IEmployeeService employeeService;
 
@@ -23,9 +23,8 @@ public class AddEmployeeEndpoint : Endpoint<AddEmployeeRequest, EmptyResponse, E
 	{
 		try
 		{
-			var a = Map.ToEntity(req);
-			await employeeService.Add(Map.ToEntity(req));
-			await SendAsync(new EmptyResponse(), StatusCodes.Status201Created, cancellation: ct);
+			var newEmployee = Map.FromEntity(await employeeService.Add(Map.ToEntity(req)));
+			await SendCreatedAtAsync<GetEmployeeEndpoint>(new { newEmployee.Id }, newEmployee, generateAbsoluteUrl: true, cancellation: ct);
 		}
 		catch (ArgumentException)
 		{

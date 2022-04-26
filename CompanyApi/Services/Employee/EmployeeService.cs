@@ -23,7 +23,7 @@ public class EmployeeService : IEmployeeService
 		var query = @"INSERT INTO Employees (Name, Email, Phone, Title, CompanyId) VALUES (@Name, @Email, @Phone, @Title, @CompanyId);
 						SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
-		employee.Id = await db.ExecuteAsync(query, employee);
+		employee.Id = await db.QueryFirstAsync<int>(query, employee);
 		return employee;
 	}
 

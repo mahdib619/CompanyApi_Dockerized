@@ -25,7 +25,7 @@ public class UpdateCompanyEndpoint : Endpoint<AddUpdateCompanyRequest, EmptyResp
 		company.Id = Route<int>("id");
 
 		if (await companyService.Update(company))
-			await SendAsync(new EmptyResponse(), cancellation: ct);
+			await SendOkAsync(cancellation: ct);
 		else
 			await SendNotFoundAsync(cancellation: ct);
 	}

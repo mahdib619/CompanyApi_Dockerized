@@ -25,7 +25,7 @@ public class UpdateEmployeeEndpoint : Endpoint<UpdateEmployeeRequest, EmptyRespo
 		employee.Id = Route<int>("id");
 
 		if (await employeeService.Update(employee))
-			await SendAsync(new EmptyResponse(), cancellation: ct);
+			await SendOkAsync(cancellation: ct);
 		else
 			await SendNotFoundAsync(cancellation: ct);
 	}

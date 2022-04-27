@@ -23,7 +23,7 @@ public class DeleteEmployeeEndpoint : Endpoint<EmptyRequest, EmptyResponse>
 		var id = Route<int>("id");
 		
 		if(await employeeService.Remove(id))
-			await SendAsync(new EmptyResponse(), cancellation: ct);
+			await SendOkAsync(cancellation: ct);
 		else
 			await SendNotFoundAsync(cancellation: ct);
 	}

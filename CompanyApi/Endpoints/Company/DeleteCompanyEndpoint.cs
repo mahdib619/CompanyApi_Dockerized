@@ -24,7 +24,7 @@ public class DeleteCompanyEndpoint : Endpoint<EmptyRequest, EmptyResponse, Compa
 		var id = Route<int>("id");
 		
 		if(await companyService.Remove(id))
-			await SendAsync(new EmptyResponse(), cancellation: ct);
+			await SendOkAsync(cancellation: ct);
 		else
 			await SendNotFoundAsync(cancellation: ct);
 	}

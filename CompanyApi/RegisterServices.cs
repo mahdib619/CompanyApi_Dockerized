@@ -22,7 +22,7 @@ public static class RegisterServices
 		services.AddAutoMapper(Assembly.GetCallingAssembly());
 
 		services.AddTransient<ICompanyService, CompanyService>();
-		services.AddTransient<IEmployeeService, EmployeeServiceContrib>();
+		services.AddTransient<IEmployeeService, EmployeeService>();
 
 		ServiceProvider = builder.Services.BuildServiceProvider();
 	}

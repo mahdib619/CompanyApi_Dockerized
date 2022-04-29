@@ -29,12 +29,19 @@ public class EmployeeService : IEmployeeService
 
 	public async Task<ICollection<Employee>> GetAll()
 	{
-		return (await db.QueryAsync<Employee>("SELECT * FROM Employees")).ToList();
+		var query = @"SELECT e.*, c.* FROM Employees AS e
+						INNER JOIN Companies AS c ON c.Id = e.CompanyId";
+
+		return (await db.QueryAsync<Employee, Company, Employee>(query, EmployeeJoinMapper)).ToList();
 	}
 
 	public async Task<Employee> GetEmployee(int id)
 	{
-		return await db.QueryFirstOrDefaultAsync<Employee>("SELECT * FROM Employees WHERE Id = @Id", new { id });
+		var query = @"SELECT e.*, c.* FROM Employees AS e
+						INNER JOIN Companies AS c ON c.Id = e.CompanyId
+						WHERE e.Id = @Id";
+
+		return (await db.QueryAsync<Employee, Company, Employee>(query, EmployeeJoinMapper, new { id })).FirstOrDefault();
 	}
 
 	public async Task<bool> Remove(int id)
@@ -52,5 +59,11 @@ public class EmployeeService : IEmployeeService
 
 		var result = await db.ExecuteAsync(query, employee);
 		return result > 0;
+	}
+
+	private static Employee EmployeeJoinMapper(Employee employee, Company company)
+	{
+		employee.Company = company;
+		return employee;
 	}
 }

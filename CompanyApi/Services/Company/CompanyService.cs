@@ -1,4 +1,5 @@
 using System.Data;
+using System.Transactions;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,27 @@ public class CompanyService : ICompanyService
 		company.Id = id;
 
 		return company;
+	}
+
+	public async Task<Company> AddWithEmployees(Company company)
+	{
+		var queryCom = @"INSERT INTO Companies (Name, Address, City, State, PostalCode) VALUES (@Name, @Address, @City, @State, @PostalCode);
+						SELECT CAST(SCOPE_IDENTITY() AS INT);";
+
+		using(var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+		{
+			var id = await db.QueryFirstAsync<int>(queryCom, company);
+			company.Id = id;
+
+			foreach (var employee in company.Employees)
+				employee.CompanyId = id;
+
+			var queryEmp = @"INSERT INTO Employees (Name, Email, Phone, Title, CompanyId) VALUES (@Name, @Email, @Phone, @Title, @CompanyId)";
+			await db.ExecuteAsync(queryEmp, company.Employees);
+
+			ts.Complete();
+			return company;
+		}
 	}
 
 	public async Task<ICollection<Company>> GetAll(bool includeEmployees = true)

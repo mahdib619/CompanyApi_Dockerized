@@ -13,5 +13,5 @@ public class Company
 	public string PostalCode { get; set; }
 
 	[Write(false)]
-	public ICollection<Employee> Employees { get; set; }
+	public ICollection<Employee> Employees { get; set; } = new List<Employee>();
 }

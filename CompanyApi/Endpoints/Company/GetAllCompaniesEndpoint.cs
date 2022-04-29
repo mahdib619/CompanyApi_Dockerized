@@ -22,7 +22,9 @@ public class GetAllCompaniesEndpoint : Endpoint<EmptyRequest, GetAllCompaniesRes
 
 	public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
 	{
-		var companies = (await companyService.GetAll()).Select(c => Map.FromEntity(c));
+		var includeEmployees = Query<bool>("includeEmployees", isRequired: false);
+
+		var companies = (await companyService.GetAll(includeEmployees)).Select(c => Map.FromEntity(c));
 		var response = new GetAllCompaniesResponse { Companies = companies };
 
 		await SendAsync(response, cancellation: ct);

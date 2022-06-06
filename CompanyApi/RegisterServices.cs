@@ -13,7 +13,8 @@ public static class RegisterServices
 		var services = builder.Services;
 
 		services.AddDbContext<ApplicationDbContext>(opt =>
-			opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")
+			opt.UseSqlite(builder.Configuration.GetConnectionString("SqlLiteConnection"),
+			sOpt => sOpt.MigrationsAssembly("SqlLiteMigrations")
 		));
 
 		services.AddFastEndpoints();

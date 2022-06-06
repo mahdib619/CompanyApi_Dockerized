@@ -1,18 +1,21 @@
 ﻿using System.Data;
-using Dapper;
+using AutoMapper;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 
 namespace CompanyApi.Services;
 
 public class EmployeeService : IEmployeeService
 {
-	private readonly IDbConnection db;
 	private readonly ICompanyService companyService;
+	private readonly ApplicationDbContext context;
+	private readonly IMapper mapper;
 
-	public EmployeeService(ICompanyService companyService, IConfiguration configuration)
+	public EmployeeService(ICompanyService companyService, ApplicationDbContext context, IMapper mapper)
 	{
-		db = new SqlConnection(configuration.GetConnectionString("DefaultConnection"));
 		this.companyService = companyService;
+		this.context = context;
+		this.mapper = mapper;
 	}
 
 	public async Task<Employee> Add(Employee employee)
@@ -20,50 +23,44 @@ public class EmployeeService : IEmployeeService
 		if (!await companyService.Contains(employee.CompanyId))
 			throw new ArgumentException("Invalid CompanyId");
 
-		var query = @"INSERT INTO Employees (Name, Email, Phone, Title, CompanyId) VALUES (@Name, @Email, @Phone, @Title, @CompanyId);
-						SELECT CAST(SCOPE_IDENTITY() AS INT);";
+		context.Employees.Add(employee);
+		await context.SaveChangesAsync();
 
-		employee.Id = await db.QueryFirstAsync<int>(query, employee);
 		return employee;
 	}
 
 	public async Task<ICollection<Employee>> GetAll()
 	{
-		var query = @"SELECT e.*, c.* FROM Employees AS e
-						INNER JOIN Companies AS c ON c.Id = e.CompanyId";
-
-		return (await db.QueryAsync<Employee, Company, Employee>(query, EmployeeJoinMapper)).ToList();
+		return await context.Employees.ToListAsync();
 	}
 
 	public async Task<Employee> GetEmployee(int id)
 	{
-		var query = @"SELECT e.*, c.* FROM Employees AS e
-						INNER JOIN Companies AS c ON c.Id = e.CompanyId
-						WHERE e.Id = @Id";
-
-		return (await db.QueryAsync<Employee, Company, Employee>(query, EmployeeJoinMapper, new { id })).FirstOrDefault();
+		return await context.Employees.FirstOrDefaultAsync(e => e.Id == id);
 	}
 
 	public async Task<bool> Remove(int id)
 	{
-		var query = "DELETE Employees WHERE Id = @Id";
+		var employee = await GetEmployee(id);
+		if (employee is null)
+			return false;
 
-		var result = await db.ExecuteAsync(query, new { id });
-		return result > 0;
+		context.Employees.Remove(employee);
+		await context.SaveChangesAsync();
+
+		return true;
 	}
 
 	public async Task<bool> Update(Employee employee)
 	{
-		var query = @"UPDATE Employees SET Name = @Name, Email = @Email, Phone = @Phone, Title = @Title
-						WHERE Id = @Id";
+		var employeeDb = await GetEmployee(employee.Id);
 
-		var result = await db.ExecuteAsync(query, employee);
-		return result > 0;
-	}
+		if (employeeDb is null)
+			return false;
 
-	private static Employee EmployeeJoinMapper(Employee employee, Company company)
-	{
-		employee.Company = company;
-		return employee;
+		mapper.Map(employee, employeeDb);
+		await context.SaveChangesAsync();
+
+		return true;
 	}
 }

@@ -1,10 +1,7 @@
-﻿using Dapper.Contrib.Extensions;
-
-namespace CompanyApi.Models.Entities;
+﻿namespace CompanyApi.Models.Entities;
 
 public class Employee
 {
-	[Key]
 	public int Id { get; set; }
 	public string Name { get; set; }
 	public string Email { get; set; }
@@ -13,7 +10,5 @@ public class Employee
 
 	public int CompanyId { get; set; }
 
-	[Write(false)]
 	public Company Company { get; set; }
-
 }

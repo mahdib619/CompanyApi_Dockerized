@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CompanyApi.Data.Migrations
+namespace CompanyApi.SqlServerMigrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20220426162340_AddEmployee")]

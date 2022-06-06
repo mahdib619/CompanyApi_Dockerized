@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace CompanyApi.Data.Migrations
+namespace CompanyApi.SqlServerMigrations
 {
     public partial class AddCompany : Migration
     {

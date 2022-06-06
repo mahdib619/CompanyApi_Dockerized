@@ -1,12 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace CompanyApi.Data.Migrations
+namespace CompanyApi.SqlServerMigrations
 {
     public partial class AddEmployee : Migration
     {
-        protected override void Up(MigrationBuilder migrationBuilder)
+		protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
                 name: "Employees",

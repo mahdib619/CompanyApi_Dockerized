@@ -4,6 +4,7 @@ builder.ConfigureServices();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
 app.UseFastEndpoints();
 app.UseAuthentication();
 app.UseOpenApi();

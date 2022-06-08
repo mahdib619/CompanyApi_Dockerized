@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace CompanyApi.SqlServerMigrations
+namespace SqlServerMigrations
 {
 	public partial class CreateEmployeeSps : Migration
 	{

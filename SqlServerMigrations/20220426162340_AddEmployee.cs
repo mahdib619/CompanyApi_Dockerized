@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace CompanyApi.SqlServerMigrations
+namespace SqlServerMigrations
 {
     public partial class AddEmployee : Migration
     {

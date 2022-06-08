@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace CompanyApi.SqlLiteMigrations
+namespace SqlLiteMigrations
 {
     public partial class Init : Migration
     {

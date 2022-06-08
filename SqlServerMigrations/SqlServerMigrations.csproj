@@ -4,11 +4,11 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<BaseOutputPath>..\CompanyApi\bin\</BaseOutputPath>
+		<BaseOutputPath>..\Server\bin\</BaseOutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\CompanyApi\CompanyApi.csproj" />
+		<ProjectReference Include="..\Server\CompanyApp.Server.csproj" />
 	</ItemGroup>
 
 </Project>

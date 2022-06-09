@@ -19,7 +19,7 @@
         </RadzenDataGridColumn>
         <RadzenDataGridColumn Width="20%" TItem="GetCompanyResponse" Property="Name" Title="Name">
             <Template Context="item">
-                <a class="link-btn" href="#" title="Go to employees">@item?.Name</a>
+                <a class="link-btn" href="\employees\@item.Id" title="Go to employees">@item?.Name</a>
             </Template>
             <EditTemplate Context="item">
                 <RadzenTextBox @bind-Value="item.Name" />

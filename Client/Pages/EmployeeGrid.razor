@@ -1,6 +1,7 @@
-﻿@page "/employees"
+﻿@page "/employees/{cid:int?}"
 
 @inject IEmployeeService employeeService
+@inject ICompanyService companyService
 @inject NavigationManager navManager
 @inject IMapper mapper
 
@@ -67,6 +68,9 @@
 
 
 @code {
+    [Parameter]
+    public int? Cid { get; set; }
+
     private RadzenDataGrid<GetEmployeeResponse> grid;
     private List<GetEmployeeResponse> employees;
 
@@ -78,7 +82,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        employees = (await employeeService.GetAll(true)).ToList();
+        if (Cid is null)
+            employees = (await employeeService.GetAll(true)).ToList();
+        else
+        {
+            var cmp = await companyService.Get(Cid.Value, true);
+            foreach (var e in cmp.Employees)
+                e.Company = cmp;
+
+            employees = cmp.Employees.ToList();
+        }
     }
 
     private void StartDeleting(int id)

@@ -81,8 +81,11 @@
 @code {
     private RadzenDataGrid<GetCompanyResponse> grid;
     private List<GetCompanyResponse> companies;
+
     private int deletingComapnyId = -1;
-    private GetCompanyResponse currentEditingCompany;
+
+    private GetCompanyResponse editingItem;
+    private GetCompanyResponse editingItemOldState;
 
     protected override async Task OnInitializedAsync()
     {
@@ -110,28 +113,36 @@
     private async Task BeginEditing(GetCompanyResponse company)
     {
         ResetDeleting();
-        currentEditingCompany = company;
-        await grid.EditRow(currentEditingCompany);
+
+        editingItem = company;
+        editingItemOldState = mapper.Map<GetCompanyResponse>(company);
+
+        await grid.EditRow(editingItem);
     }
     private async Task SaveRow()
     {
-        if (currentEditingCompany is null)
+        if (editingItem is null)
             return;
 
-        await grid.UpdateRow(currentEditingCompany);
+        await grid.UpdateRow(editingItem);
 
-        var req = mapper.Map<AddUpdateCompanyRequest>(currentEditingCompany);
-        await companyService.Update(currentEditingCompany.Id, req);
+        var req = mapper.Map<AddUpdateCompanyRequest>(editingItem);
+        await companyService.Update(editingItem.Id, req);
 
-        currentEditingCompany = null;
+        editingItem = null;
+        editingItemOldState = null;
     }
     private void ResetEditing()
     {
-        if (currentEditingCompany is null)
+        if (editingItem is null)
             return;
 
-        grid.CancelEditRow(currentEditingCompany);
-        currentEditingCompany = null;
+        grid.CancelEditRow(editingItem);
+
+        mapper.Map(editingItemOldState, editingItem);
+
+        editingItem = null;
+        editingItemOldState = null;
     }
 
     private void NavigateToAdd()

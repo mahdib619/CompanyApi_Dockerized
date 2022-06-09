@@ -9,5 +9,6 @@ public class CompanyMapperProfile : Profile
 	public CompanyMapperProfile()
 	{
 		CreateMap<GetCompanyResponse, AddUpdateCompanyRequest>();
+		CreateMap<GetCompanyResponse, GetCompanyResponse>();
 	}
 }

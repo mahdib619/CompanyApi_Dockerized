@@ -1,0 +1,40 @@
+﻿a.link-btn {
+    text-decoration: none;
+    color: #48606c;
+}
+
+a.link-btn:hover {
+    text-decoration:underline;
+}
+
+.action{
+    display:flex;
+    justify-content:space-around;
+}
+.action span{
+    height:100%;
+    cursor:pointer;
+}
+
+.add-section{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:10px;
+}
+
+.add-section button{
+    padding-left:30px;
+    padding-right:30px;
+}
+
+.add-section button:hover{
+    background-color:#0cb264;
+}
+
+.comp-loc {
+    --bs-gutter-x: 0;
+}
+
+.comp-loc :first-child{
+    padding-right:3px;
+}

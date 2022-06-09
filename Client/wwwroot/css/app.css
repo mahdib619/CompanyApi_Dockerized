@@ -1,9 +1,5 @@
 ﻿@import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
-html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-}
-
 h1:focus {
     outline: none;
 }
@@ -62,3 +58,105 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.btn:focus {
+    box-shadow: none !important;
+}
+
+@import url("open-iconic/font/css/open-iconic-bootstrap.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,700;1,900&display=swap");
+
+html,
+body {
+    font-family: "Roboto", sans-serif;
+    font-size: 18px;
+}
+
+body {
+    background: url(../images/SuggestionPageBackground.png) no-repeat center center fixed;
+    background-size: cover;
+    height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Montserrat", sans-serif;
+    font-weight: 900;
+    color: #ffffff;
+}
+
+h1 {
+    padding-top: 1rem;
+}
+
+    h1:focus {
+        outline: none;
+    }
+
+.page-heading {
+    text-align: center;
+}
+
+.create-form {
+    margin: 0;
+    margin-bottom: 1rem;
+}
+
+.close-button-section {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.input-section {
+    margin-bottom: 2rem;
+}
+
+.form-label {
+    margin-bottom: 0;
+}
+
+.form-control:focus {
+    box-shadow: none;
+}
+
+.center-children {
+    display: flex;
+    justify-content: center;
+}
+
+.form-layout {
+    background-color: #f0f8ff;
+    border-radius: 15px;
+    padding: 2rem;
+}
+
+.btn-main {
+    color: #ffffff;
+    background-color: #39bad8;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 900;
+    border-radius: 10px;
+    border-width: 3px;
+}
+
+    .btn-main:hover {
+        color: #39bad8;
+        border: 3px #39bad8 solid;
+        background-color: #ffffff;
+    }
+
+.rz-textbox {
+    max-width: 100%;
+    width: 100%;
+}
+
+.oi-check {
+    font-size: 1.03rem;
+}

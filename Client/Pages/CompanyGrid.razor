@@ -1,0 +1,141 @@
+﻿@page "/"
+
+@inject ICompanyService companyService
+@inject NavigationManager navManager
+@inject IMapper mapper
+
+<PageTitle>Companies</PageTitle>
+
+<div class="add-section col-12">
+    <button class="btn btn-success" @onclick="NavigateToAdd">Add</button>
+</div>
+
+<RadzenDataGrid @ref="grid" Data="@companies" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true">
+    <Columns>
+        <RadzenDataGridColumn Width="50px" TItem="GetCompanyResponse" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+            <Template Context="item">
+                @(companies.IndexOf(item) + 1)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Width="20%" TItem="GetCompanyResponse" Property="Name" Title="Name">
+            <Template Context="item">
+                <a class="link-btn" href="#" title="Go to employees">@item?.Name</a>
+            </Template>
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Name" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="GetCompanyResponse" Property="State" Title="Location">
+            <Template Context="item">
+                @($"{item.State}\\{item.City}")
+            </Template>
+            <EditTemplate Context="item">
+                <div class="row comp-loc">
+                    <div class="col-6">
+                        <RadzenTextBox @bind-Value="item.State" Placeholder="State" />
+                    </div>
+                    <div class="col-6">
+                        <RadzenTextBox @bind-Value="item.City" Placeholder="City" />
+                    </div>
+                </div>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="GetCompanyResponse" Property="PostalCode" Title="Postal Code">
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.PostalCode" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Width="30%" TItem="GetCompanyResponse" Property="Address" Title="Address">
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Address" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Width="8%" TItem="GetCompanyResponse" Property="OrderID" Title="Actions" Filterable="false" Sortable="false">
+            <Template Context="item">
+                @if (item.Id == deletingComapnyId)
+                {
+                    <div class="action">
+                        <span class="oi oi-x action-btn text-muted p-1" @onclick="ResetDeleting" title="cancel" />
+                        <span class="oi oi-check text-danger action-btn p-1" @onclick="ConfirmDelete" title="confirm" />
+                    </div>
+                }
+                else
+                {
+                    <div class="action">
+                        <span class="oi oi-pencil text-warning action-btn p-1" @onclick="()=>BeginEditing(item)" title="edit" />
+                        <span class="oi oi-delete text-danger action-btn p-1" @onclick="()=>StartDeleting(item.Id)" title="delete" />
+                    </div>
+                }
+            </Template>
+            <EditTemplate Context="item">
+                <div class="action">
+                    <span class="oi oi-x action-btn text-muted p-1" @onclick="ResetEditing" title="cancel" />
+                    <span class="oi oi-check text-success action-btn p-1" @onclick="SaveRow" title="confirm" />
+                </div>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+
+@code {
+    private RadzenDataGrid<GetCompanyResponse> grid;
+    private List<GetCompanyResponse> companies;
+    private int deletingComapnyId = -1;
+    private GetCompanyResponse currentEditingCompany;
+
+    protected override async Task OnInitializedAsync()
+    {
+        companies = (await companyService.GetAll()).ToList();
+    }
+
+    private void StartDeleting(int id)
+    {
+        ResetEditing();
+        deletingComapnyId = id;
+    }
+    private async Task ConfirmDelete()
+    {
+        if (deletingComapnyId == -1)
+            return;
+
+        companies.Remove(companies.FirstOrDefault(c => c.Id == deletingComapnyId));
+        await companyService.Delete(deletingComapnyId);
+
+        await grid.Reload();
+        ResetDeleting();
+    }
+    private void ResetDeleting() => deletingComapnyId = -1;
+
+    private async Task BeginEditing(GetCompanyResponse company)
+    {
+        ResetDeleting();
+        currentEditingCompany = company;
+        await grid.EditRow(currentEditingCompany);
+    }
+    private async Task SaveRow()
+    {
+        if (currentEditingCompany is null)
+            return;
+
+        await grid.UpdateRow(currentEditingCompany);
+
+        var req = mapper.Map<AddUpdateCompanyRequest>(currentEditingCompany);
+        await companyService.Update(currentEditingCompany.Id, req);
+
+        currentEditingCompany = null;
+    }
+    private void ResetEditing()
+    {
+        if (currentEditingCompany is null)
+            return;
+
+        grid.CancelEditRow(currentEditingCompany);
+        currentEditingCompany = null;
+    }
+
+    private void NavigateToAdd()
+    {
+        navManager.NavigateTo("addCompany");
+    }
+}

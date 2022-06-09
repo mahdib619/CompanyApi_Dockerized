@@ -1,0 +1,60 @@
+﻿@page "/addCompany"
+
+@inject NavigationManager navManager
+@inject ICompanyService companyService
+
+<h1 class="page-heading text-uppercase mb-4">Add a comapny</h1>
+
+<div class="row justify-content-center create-form">
+    <div class="col-xl-8 col-lg-10 form-layout">
+        <div class="close-button-section">
+            <button class="btn btn-close" @onclick="Close"></button>
+        </div>
+        <EditForm Model="newCompany" OnValidSubmit="Add">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="company-name">Name</lable>
+                <InputText class="form-control" id="company-name" @bind-Value="newCompany.Name" />
+            </div>
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="company-state">State</lable>
+                <InputText class="form-control" id="company-state" @bind-Value="newCompany.State" />
+            </div>
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="company-city">City</lable>
+                <InputText class="form-control" id="company-city" @bind-Value="newCompany.City" />
+            </div>
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="company-pc">Postal Code</lable>
+                <InputText class="form-control" id="company-pc" @bind-Value="newCompany.PostalCode" />
+            </div>
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="company-address">Address</lable>
+                <InputTextArea class="form-control" id="company-address" @bind-Value="newCompany.Address" />
+            </div>
+
+            <div class="center-children">
+                <button class="btn btn-lg btn-main text-uppercase" type="submit">Add</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private AddUpdateCompanyRequest newCompany = new();
+
+    private async Task Add()
+    {
+        await companyService.Add(newCompany);
+        Close();
+    }
+
+    private void Close() => navManager.NavigateTo("/");
+}

@@ -22,8 +22,10 @@ public class GetEmployeeEndpoint : Endpoint<EmptyRequest, GetEmployeeResponse, E
 
 	public override async Task HandleAsync(EmptyRequest req, CancellationToken ct)
 	{
+		var includeCompany = Query<bool>("includeCompany", false);
+
 		var id = Route<int>("id");
-		var employee = await employeeService.GetEmployee(id);
+		var employee = await employeeService.GetEmployee(id, includeCompany);
 
 		if (employee is null)
 			await SendNotFoundAsync(cancellation: ct);

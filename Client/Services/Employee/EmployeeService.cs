@@ -7,6 +7,7 @@ namespace CompanyApp.Client.Services;
 public class EmployeeService : IEmployeeService
 {
 	private const string ROUTE = "employees";
+	private const string INCLUDE_COMPANIES_QUERY = "includeCompany";
 	private readonly HttpClient http;
 
 	public EmployeeService(HttpClient http)
@@ -14,15 +15,15 @@ public class EmployeeService : IEmployeeService
 		this.http = http;
 	}
 
-	public async Task<IEnumerable<GetEmployeeResponse>> GetAll()
+	public async Task<IEnumerable<GetEmployeeResponse>> GetAll(bool includeCompany = false)
 	{
-		var response = await http.GetFromJsonAsync<GetAllEmployeesResponse>(ROUTE);
+		var response = await http.GetFromJsonAsync<GetAllEmployeesResponse>($"{ROUTE}?{INCLUDE_COMPANIES_QUERY}={includeCompany}");
 		return response.Employees;
 	}
 
-	public async Task<GetEmployeeResponse> Get(int id)
+	public async Task<GetEmployeeResponse> Get(int id, bool includeCompany = false)
 	{
-		var response = await http.GetFromJsonAsync<GetEmployeeResponse>($"{ROUTE}/{id}");
+		var response = await http.GetFromJsonAsync<GetEmployeeResponse>($"{ROUTE}/{id}?{INCLUDE_COMPANIES_QUERY}={includeCompany}");
 		return response;
 	}
 

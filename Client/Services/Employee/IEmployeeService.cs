@@ -7,7 +7,7 @@ public interface IEmployeeService
 {
 	Task<GetEmployeeResponse> Add(AddEmployeeRequest req);
 	Task<bool> Delete(int id);
-	Task<GetEmployeeResponse> Get(int id);
-	Task<IEnumerable<GetEmployeeResponse>> GetAll();
+	Task<GetEmployeeResponse> Get(int id, bool includeCompany = false);
+	Task<IEnumerable<GetEmployeeResponse>> GetAll(bool includeCompany = false);
 	Task<bool> Update(int id, UpdateEmployeeRequest req);
 }

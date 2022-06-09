@@ -1,0 +1,138 @@
+﻿@page "/employees"
+
+@inject IEmployeeService employeeService
+@inject NavigationManager navManager
+@inject IMapper mapper
+
+<PageTitle>Employees</PageTitle>
+
+<div class="add-section col-12">
+    <button class="btn btn-success" @onclick="NavigateToAdd">Add</button>
+</div>
+
+<RadzenDataGrid @ref="grid" Data="@employees" AllowFiltering="true" AllowPaging="true" PageSize="5" AllowSorting="true">
+    <Columns>
+        <RadzenDataGridColumn Width="50px" TItem="GetEmployeeResponse" Title="#" Filterable="false" Sortable="false" TextAlign="TextAlign.Center">
+            <Template Context="item">
+                @(employees.IndexOf(item) + 1)
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Width="15%" TItem="GetEmployeeResponse" Property="Name" Title="Name">
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Name" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Width="10%" TItem="GetEmployeeResponse" Property="Title" Title="Title">
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Title" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Width="20%" TItem="GetEmployeeResponse" Property="Phone" Title="Phone">
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Phone" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn Width="20%" TItem="GetEmployeeResponse" Property="Email" Title="Email">
+            <EditTemplate Context="item">
+                <RadzenTextBox @bind-Value="item.Email" />
+            </EditTemplate>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="GetEmployeeResponse" Property="Company.Name" Title="Company Name" />
+        <RadzenDataGridColumn Width="8%" TItem="GetEmployeeResponse" Property="OrderID" Title="Actions" Filterable="false" Sortable="false">
+            <Template Context="item">
+                @if (item.Id == deletingEmployeeId)
+                {
+                    <div class="action">
+                        <span class="oi oi-x action-btn text-muted p-1" @onclick="ResetDeleting" title="cancel" />
+                        <span class="oi oi-check text-danger action-btn p-1" @onclick="ConfirmDelete" title="confirm" />
+                    </div>
+                }
+                else
+                {
+                    <div class="action">
+                        <span class="oi oi-pencil text-warning action-btn p-1" @onclick="()=>BeginEditing(item)" title="edit" />
+                        <span class="oi oi-delete text-danger action-btn p-1" @onclick="()=>StartDeleting(item.Id)" title="delete" />
+                    </div>
+                }
+            </Template>
+            <EditTemplate Context="item">
+                <div class="action">
+                    <span class="oi oi-x action-btn text-muted p-1" @onclick="ResetEditing" title="cancel" />
+                    <span class="oi oi-check text-success action-btn p-1" @onclick="SaveRow" title="confirm" />
+                </div>
+            </EditTemplate>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
+
+@code {
+    private RadzenDataGrid<GetEmployeeResponse> grid;
+    private List<GetEmployeeResponse> employees;
+
+    private int deletingEmployeeId = -1;
+    private GetEmployeeResponse editingItem;
+    private GetEmployeeResponse editingItemOldState;
+
+    private Dictionary<int, GetCompanyResponse> companies = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        employees = (await employeeService.GetAll(true)).ToList();
+    }
+
+    private void StartDeleting(int id)
+    {
+        ResetEditing();
+        deletingEmployeeId = id;
+    }
+    private async Task ConfirmDelete()
+    {
+        if (deletingEmployeeId == -1)
+            return;
+
+        employees.Remove(employees.FirstOrDefault(c => c.Id == deletingEmployeeId));
+        await employeeService.Delete(deletingEmployeeId);
+
+        await grid.Reload();
+        ResetDeleting();
+    }
+    private void ResetDeleting() => deletingEmployeeId = -1;
+
+    private async Task BeginEditing(GetEmployeeResponse employee)
+    {
+        ResetDeleting();
+
+        editingItem = employee;
+        editingItemOldState = mapper.Map<GetEmployeeResponse>(editingItem);
+
+        await grid.EditRow(editingItem);
+    }
+    private async Task SaveRow()
+    {
+        if (editingItem is null)
+            return;
+
+        await grid.UpdateRow(editingItem);
+
+        var req = mapper.Map<UpdateEmployeeRequest>(editingItem);
+        await employeeService.Update(editingItem.Id, req);
+
+        editingItem = null;
+        editingItemOldState = null;
+    }
+    private void ResetEditing()
+    {
+        if (editingItem is null)
+            return;
+
+        grid.CancelEditRow(editingItem);
+
+        mapper.Map(editingItemOldState, editingItem);
+
+        editingItem = null;
+        editingItemOldState = null;
+    }
+
+    private void NavigateToAdd() => navManager.NavigateTo("addEmployee");
+}

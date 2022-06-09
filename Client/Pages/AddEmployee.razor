@@ -1,0 +1,69 @@
+﻿@page "/addEmployee"
+
+@inject NavigationManager navManager
+@inject IEmployeeService employeeService
+@inject ICompanyService companyService
+
+<h1 class="page-heading text-uppercase mb-4">Add an employee</h1>
+
+<div class="row justify-content-center create-form">
+    <div class="col-xl-8 col-lg-10 form-layout">
+        <div class="close-button-section">
+            <button class="btn btn-close" @onclick="Close"></button>
+        </div>
+        <EditForm Model="newEmployee" OnValidSubmit="Add">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="employee-name">Name</lable>
+                <InputText class="form-control" id="employee-name" @bind-Value="newEmployee.Name" />
+            </div>
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="employee-title">Title</lable>
+                <InputText class="form-control" id="employee-title" @bind-Value="newEmployee.Title" />
+            </div>
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="employee-phone">Phone</lable>
+                <InputText class="form-control" id="employee-phone" @bind-Value="newEmployee.Phone" />
+            </div>
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="employee-email">Email</lable>
+                <InputText class="form-control" id="employee-email" @bind-Value="newEmployee.Email" />
+            </div>
+
+            <div class="input-section">
+                <lable class="form-label fw-bold text-uppercase" for="employee-address">Company</lable>
+                <RadzenDropDown Attributes='DictionaryHelpers.FromString("class:form-control drp-comp")'
+                    Style="width:300px" Data="@companies" @bind-Value="newEmployee.CompanyId" Placeholder="Select Company" 
+                    AllowFiltering="true" TValue="int" TextProperty="Name" ValueProperty="Id"/>
+            </div>
+
+            <div class="center-children">
+                <button class="btn btn-lg btn-main text-uppercase" type="submit">Add</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+@code {
+    private AddEmployeeRequest newEmployee = new();
+    private List<GetCompanyResponse> companies;
+
+    protected override async Task OnInitializedAsync()
+    {
+        companies = (await companyService.GetAll()).ToList();
+    }
+
+    private async Task Add()
+    {
+        await employeeService.Add(newEmployee);
+        Close();
+    }
+
+    private void Close() => navManager.NavigateTo("/employees");
+}

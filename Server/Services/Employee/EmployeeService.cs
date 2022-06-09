@@ -29,14 +29,24 @@ public class EmployeeService : IEmployeeService
 		return employee;
 	}
 
-	public async Task<ICollection<Employee>> GetAll()
+	public async Task<ICollection<Employee>> GetAll(bool includeCompany = false)
 	{
-		return await context.Employees.ToListAsync();
+		IQueryable<Employee> employees = context.Employees;
+
+		if(includeCompany)
+			employees = employees.Include(c => c.Company);
+
+		return await employees.ToListAsync();
 	}
 
-	public async Task<Employee> GetEmployee(int id)
+	public async Task<Employee> GetEmployee(int id, bool includeCompany = false)
 	{
-		return await context.Employees.FirstOrDefaultAsync(e => e.Id == id);
+		IQueryable<Employee> employees = context.Employees;
+
+		if (includeCompany)
+			employees = employees.Include(c => c.Company);
+
+		return await employees.FirstOrDefaultAsync(e => e.Id == id);
 	}
 
 	public async Task<bool> Remove(int id)

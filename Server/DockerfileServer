@@ -1,0 +1,39 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+WORKDIR /app
+
+RUN mkdir data
+ENV PATH="${PATH}:/root/.dotnet/tools"
+
+RUN dotnet tool install --global dotnet-ef || echo "dotnet-ef already installed"
+
+# Server restore dependencies
+COPY Server/CompanyApp.Server.csproj ./Server/
+COPY Shared/CompanyApp.Shared.csproj ./Shared/
+RUN cd Server && dotnet restore && cd ..
+
+# Migrations restore dependencies
+COPY SqlLiteMigrations/SqlLiteMigrations.csproj ./SqlLiteMigrations/
+RUN cd SqlLiteMigrations && dotnet restore && cd ..
+
+# Migrations build
+COPY Shared/ Shared/
+COPY Server/ Server/
+COPY SqlLiteMigrations/ SqlLiteMigrations/
+RUN cd SqlLiteMigrations && dotnet build
+
+WORKDIR /app/Server
+
+# Run Migrations and Publish Server
+RUN dotnet ef database update --no-build
+RUN dotnet publish -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS run-env
+WORKDIR /app
+
+COPY --from=build-env /app/publish .
+COPY --from=build-env /app/data ./data
+
+EXPOSE 80
+EXPOSE 443
+
+ENTRYPOINT ["dotnet", "CompanyApp.Server.dll"]

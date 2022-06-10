@@ -1,7 +1,9 @@
 version: '3.9'
 services:
-  companyapi:
-    build: .
+  server:
+    build:
+      context: ./
+      dockerfile: ./Server/DockerfileServer
     ports:
       - "8080:80"
       - "8081:443"
@@ -10,8 +12,16 @@ services:
       ASPNETCORE_HTTPS_PORT: "8081"
       ASPNETCORE_ENVIRONMENT: "Development"
     volumes:
-      - ${APPDATA}\microsoft\UserSecrets\:/root/.microsoft/usersecrets
-      - ${USERPROFILE}\.aspnet\https:/root/.aspnet/https/
+      - ./dev-certs:/root/.aspnet/https/
       - CompanyApiData:/app/data
+  client:
+    build:
+      context: ./
+      dockerfile: ./Client/DockerfileClient
+    ports:
+      - "8000:80"
+      - "8001:443"
+    volumes:
+      - ./dev-certs:/app/keys
 volumes:
   CompanyApiData:

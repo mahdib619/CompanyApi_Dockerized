@@ -1,0 +1,11 @@
+**bin
+**obj/
+**.vscode/
+**.vs/
+**.git/
+**.gitignore
+**.editorconfig
+**DockerfileClient
+**Migrations/
+**docker-compose*
+Server/

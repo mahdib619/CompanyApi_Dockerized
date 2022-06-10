@@ -5,4 +5,7 @@
 **.git/
 **.gitignore
 **.editorconfig
-Dockerfile
+**DockerfileServer
+**docker-compose*
+SqlServerMigrations/
+Client/

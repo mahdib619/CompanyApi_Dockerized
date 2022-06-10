@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
+WORKDIR /app
+
+# Client restore dependencies
+COPY Client/CompanyApp.Client.csproj ./Client/
+COPY Shared/CompanyApp.Shared.csproj ./Shared/
+RUN cd Client && dotnet restore
+
+# Copy Client Files
+COPY Client/ Client/
+COPY Shared/ Shared/
+
+# Publish Client
+WORKDIR /app/Client
+RUN dotnet publish -c Release -o /app/publish
+
+FROM nginx:1.22.0-alpine-perl AS run-env
+WORKDIR /app
+
+COPY Client/nginx.conf /etc/nginx/
+COPY --from=build-env /app/publish .
+
+EXPOSE 80
+EXPOSE 443

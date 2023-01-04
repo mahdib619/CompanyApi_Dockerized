@@ -7,7 +7,7 @@ trigger:
 - master
 
 pool:
-  vmImage: WinIndi
+  name: WinIndi
 
 variables:
   buildConfiguration: 'Release'

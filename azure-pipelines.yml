@@ -7,7 +7,9 @@ trigger:
 - master
 
 pool:
-  name: WinIndi
+  name: test
+  demands:
+    - agent.name -equals WinIndi
 
 variables:
   buildConfiguration: 'Release'
